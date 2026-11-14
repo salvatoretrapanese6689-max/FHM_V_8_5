@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-<title>Family Hub Manager 7.2</title>
+<title>Family Hub Manager 7.4</title>
 <style>
 :root{--bg:#0B0F1A;--sf:#101a33;--tx:#f2f6ff;--mu:#a7b5cf;--ac:#00A3FF;--ac2:#16264a;--ln:#26386a;--rd:#ff3d5a;--pos:#39ff6a;color-scheme:dark}
 
@@ -319,6 +319,22 @@ button.logo:active{transform:scale(.94)}
 .bt{display:flex;gap:8px;margin-top:14px}
 .bt button{flex:1;border:1px solid var(--ln);background:none;color:var(--tx);border-radius:12px;padding:13px;font:inherit;font-weight:700;cursor:pointer}
 .bt .primary,.bt .danger{border:0;color:#fff}
+.fav{margin:22px 0 14px;padding:2px 0 8px;border-top:2px solid var(--ac);border-bottom:2px solid var(--ac);box-shadow:0 -7px 14px -11px rgba(0,163,255,.8),0 7px 14px -11px rgba(0,163,255,.8)}
+.fav .fh{display:flex;align-items:center;justify-content:space-between}
+.fav h2{margin:12px 0 6px}
+.gbtn{width:34px;height:34px;border-radius:50%;border:1px solid var(--ln);background:var(--ac2);color:var(--tx);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.row.sub{padding:6px 0 6px 40px;font-size:14px;border-bottom:1px dashed var(--ln)}
+.fvl{max-height:50vh;overflow:auto;margin:8px 0 14px}
+.fvi{display:flex;align-items:center;gap:10px;padding:8px 4px;border-bottom:1px solid var(--ln);cursor:pointer}
+.fvi input{width:22px;height:22px;accent-color:var(--ac);flex:none}
+.erow.rec{border:2px solid var(--ac);box-shadow:0 0 9px rgba(0,163,255,.28)}
+.tot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px;padding:10px 14px;border:1px solid var(--ln);border-radius:14px;background:var(--ac2)}
+.tot p{margin:0;color:var(--mu);font-size:13px}
+.tot small{color:var(--mu);font-size:13px}
+.tot strong{font-size:20px}
+.tot strong.out{color:var(--rd)}
+.tot strong.in{color:var(--pos)}
+.tot2>div{flex:1}
 </style>
 </head>
 <body>
@@ -494,14 +510,30 @@ function catList(){
   const R=D.categories.filter(c=>c.type===type&&mq(path(c.id),Q));
   return `<ul>${R.map(nodeFlat).join('')||'<li class="empty">Nessuna categoria trovata.</li>'}</ul>`;
 }
-const entRow=x=>`<div class="row erow" data-e="edit" data-v="${x.id}">${cv(x.catId)}<span class="nm">${esc((find(x.catId)||{}).name||'Senza categoria')}${x.recId?'<span class="rtag">↻ Ricorrente</span>':''}<small>${x.date.split('-').reverse().join('/')}${x.note?' · '+esc(x.note):''}${x.carId&&carOf(x.carId)?' · '+esc(carOf(x.carId).name):''}${x.bp>0?' · '+(x.type==='in'?'+':'−')+x.bp+(x.bp===1?' buono':' buoni'):''}</small></span><strong class="${x.type}">${x.type==='out'?'−':'+'}${eur(x.amount)}</strong></div>`;
+const entRow=x=>`<div class="row erow${x.recId?' rec':''}" data-e="edit" data-v="${x.id}">${cv(x.catId)}<span class="nm">${esc((find(x.catId)||{}).name||'Senza categoria')}${x.recId?'<span class="rtag">↻ Ricorrente</span>':''}<small>${x.date.split('-').reverse().join('/')}${x.note?' · '+esc(x.note):''}${x.carId&&carOf(x.carId)?' · '+esc(carOf(x.carId).name):''}${x.bp>0?' · '+(x.type==='in'?'+':'−')+x.bp+(x.bp===1?' buono':' buoni'):''}</small></span><strong class="${x.type}">${x.type==='out'?'−':'+'}${eur(x.amount)}</strong></div>`;
 function entList(){
   const t=fsec==='spese'?'out':'in',q=Q.trim();
   let L=D.entries.filter(x=>x.type===t&&prfIn(x.date));
   if(q)L=L.filter(x=>mq([path(x.catId),x.note,x.carId&&carOf(x.carId)?carOf(x.carId).name:'',dd(x.date),String(x.amount).replace('.',','),eur(x.amount)].join(' '),q));
   L=L.sort((a,b)=>b.date.localeCompare(a.date));
-  const n=L.length,fl=q||prfOn();L=L.slice(0,fl?200:60);
-  return (fl?`<p class="hint">${n} ${n===1?'risultato':'risultati'}</p>`:'')+(L.map(entRow).join('')||`<p class="empty">Nessuna registrazione${prfOn()?' nel periodo':''}.</p>`);
+  const n=L.length,fl=q||prfOn(),lim=fl?200:60,tot=Math.round(L.reduce((a,x)=>a+x.amount,0)*100)/100,shown=L.slice(0,lim);
+  return `<div class="tot"><div><p>${t==='out'?'Totale uscite':'Totale entrate'}${fl?' (con i filtri)':''}</p><small>${n} ${n===1?'voce':'voci'}</small></div><strong class="${t}">${t==='out'?'−':'+'}${eur(tot)}</strong></div>`+(n>lim?`<p class="hint">Mostro le ultime ${lim} voci su ${n}. Il totale comprende tutte le ${n}.</p>`:'')+(shown.map(entRow).join('')||`<p class="empty">Nessuna registrazione${prfOn()?' nel periodo':''}.</p>`);
+}
+function recOcc(r){
+  const out=[],pad=n=>String(n).padStart(2,'0');
+  D.entries.forEach(x=>{if(x.recId===r.id&&prfIn(x.date))out.push({date:x.date,amount:x.amount})});
+  if(r.active){const end=PRF.per==='y'?PRF.year+'-12-31':PRF.year+'-'+pad(PRF.mon+1)+'-31';let d=r.next,g=0;while(d<=end&&g++<500){if(prfIn(d))out.push({date:d,amount:r.amount});d=addM(d,r.n,r.day)}}
+  return out;
+}
+function recList(){
+  const q=Q.trim(),on=prfOn(),cad={1:'Ogni mese',2:'Ogni 2 mesi',3:'Ogni 3 mesi',6:'Ogni 6 mesi',12:'Ogni anno'};
+  let R=(D.rec||[]).filter(r=>rt==='all'||(rt==='act'?r.active:!r.active));
+  if(q)R=R.filter(r=>mq([r.name,path(r.catId),String(r.amount).replace('.',','),eur(r.amount),dd(r.next)].join(' '),q));
+  let items=R.map(r=>({r,occ:on?recOcc(r):null}));
+  if(on)items=items.filter(i=>i.occ.length);
+  const sum=t=>Math.round(items.filter(i=>i.r.type===t).reduce((a,i)=>a+(on?i.occ.reduce((b,o)=>b+o.amount,0):i.r.amount),0)*100)/100,n=items.length;
+  return `<div class="tot tot2"><div><p>Entrate</p><strong class="in">+${eur(sum('in'))}</strong></div><div><p>Uscite</p><strong class="out">−${eur(sum('out'))}</strong></div></div><p class="hint">${n} ${n===1?'ricorrenza':'ricorrenze'} · ${on?'importi del periodo (già registrati e in programma)':'importo di una singola scadenza'}</p>`+
+  (items.map(({r,occ})=>`<div class="row erow" data-e="editrec" data-v="${r.id}">${cv(r.catId)}<span class="nm">${esc(r.name)}<small>${cad[r.n]} · prossima ${r.next.split('-').reverse().join('/')}${on?' · '+occ.length+'× nel periodo':''}${r.active?'':' · sospesa'}${find(r.catId)?'':' · senza categoria'}</small></span><strong class="${r.type}">${r.type==='out'?'−':'+'}${eur(r.amount)}</strong></div>`).join('')||`<p class="empty">Nessuna ricorrenza ${q||on?'trovata':'in questa lista'}.</p>`);
 }
 function scaList(){
   const kk=area==='man'?'m':'s',q=Q.trim();
@@ -516,6 +548,7 @@ function listHTML(){
   if(area==='fin'&&(fsec==='spese'||fsec==='entrate'))return entList();
   if((area==='sca'||area==='man')&&fsec==='avv')return scaList();
   if(area==='doc')return docList();
+  if(area==='fin'&&fsec==='ricorr')return recList();
   if(area==='sca'&&fsec==='task')return taskList();
   return '';
 }
@@ -550,10 +583,9 @@ function render(){
     ${srchBox('Cerca task…')}<div id="lst">${taskList()}</div>`;return}
   if(area==='fin'&&fsec==='gest'){m.innerHTML=gest();return}
   if(area==='fin'&&fsec==='ricorr'){
-    const R=(D.rec||[]).filter(r=>rt==='all'||(rt==='act'?r.active:!r.active)),cad={1:'Ogni mese',2:'Ogni 2 mesi',3:'Ogni 3 mesi',6:'Ogni 6 mesi',12:'Ogni anno'};
     m.innerHTML=`<button class="primary wide" style="margin-top:0" data-e="newrec">＋ Nuova ricorrenza</button>
     <div class="seg" style="margin:12px 0"><button data-rt="act" class="${rt==='act'?'on':''}">Attive</button><button data-rt="old" class="${rt==='old'?'on':''}">Sospese</button><button data-rt="all" class="${rt==='all'?'on':''}">Tutte</button></div>
-    ${R.map(r=>`<div class="row erow" data-e="editrec" data-v="${r.id}">${cv(r.catId)}<span class="nm">${esc(r.name)}<small>${cad[r.n]} · prossima ${r.next.split('-').reverse().join('/')}${r.active?'':' · sospesa'}${find(r.catId)?'':' · senza categoria'}</small></span><strong class="${r.type}">${r.type==='out'?'−':'+'}${eur(r.amount)}</strong></div>`).join('')||'<p class="empty">Nessuna ricorrenza in questa lista.</p>'}`;return}
+    ${srchBox('Cerca per nome, categoria, importo…')}${prfBox()}<div id="lst" style="margin-top:8px">${recList()}</div>`;return}
   if(area==='fin'&&(fsec==='spese'||fsec==='entrate')){
     const t=fsec==='spese'?'out':'in';
     m.innerHTML=`<button class="primary wide" style="margin-top:0" data-e="new" data-v="${t}">＋ ${t==='out'?'Nuova uscita':'Nuova entrata'}</button>${srchBox('Cerca per categoria, nota, importo…')}${prfBox()}<div id="lst" style="margin-top:8px">${entList()}</div>`;return}
@@ -567,7 +599,7 @@ const eur=n=>new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR'}).fo
 const MESI=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
 const root=c=>{while(c&&c.parentId)c=find(c.parentId);return c};
 const MESI_L=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
-const erowH=x=>`<div class="row erow" data-e="edit" data-v="${x.id}">${cv(x.catId)}<span class="nm">${esc((find(x.catId)||{}).name||'Senza categoria')}${x.recId?'<span class="rtag">↻ Ricorrente</span>':''}<small>${x.date.split('-').reverse().join('/')}${x.note?' · '+esc(x.note):''}${x.carId&&carOf(x.carId)?' · '+esc(carOf(x.carId).name):''}${x.bp>0?' · '+(x.type==='in'?'+':'−')+x.bp+(x.bp===1?' buono':' buoni'):''}</small></span><strong class="${x.type}">${x.type==='out'?'−':'+'}${eur(x.amount)}</strong></div>`;
+const erowH=x=>`<div class="row erow${x.recId?' rec':''}" data-e="edit" data-v="${x.id}">${cv(x.catId)}<span class="nm">${esc((find(x.catId)||{}).name||'Senza categoria')}${x.recId?'<span class="rtag">↻ Ricorrente</span>':''}<small>${x.date.split('-').reverse().join('/')}${x.note?' · '+esc(x.note):''}${x.carId&&carOf(x.carId)?' · '+esc(carOf(x.carId).name):''}${x.bp>0?' · '+(x.type==='in'?'+':'−')+x.bp+(x.bp===1?' buono':' buoni'):''}</small></span><strong class="${x.type}">${x.type==='out'?'−':'+'}${eur(x.amount)}</strong></div>`;
 function pie(rows,total){
   const R=88,r=50,cx=100,cy=100,pt=(rad,a)=>[(cx+Math.cos(a)*rad).toFixed(2),(cy+Math.sin(a)*rad).toFixed(2)];
   let a0=-Math.PI/2,o='';
@@ -580,6 +612,28 @@ function pie(rows,total){
   });
   return `<svg class="pie" viewBox="0 0 200 200">${o}<text x="100" y="97" text-anchor="middle" class="pt1">Uscite</text><text x="100" y="117" text-anchor="middle" class="pt2">${eur(total)}</text></svg>`;
 }
+const favIds=()=>Array.isArray(D.meta.fav)?D.meta.fav.filter(id=>find(id)):D.categories.filter(c=>c.car).map(c=>c.id);
+function favSection(cur){
+  const rows=favIds().map(id=>{const c=find(id),set=[id,...desc(id)],L=cur.filter(x=>set.includes(x.catId));return{id,c,L,v:L.reduce((t,x)=>t+x.amount,0)}}).sort((a,b)=>b.v-a.v);
+  const body=rows.length?rows.map(r=>{
+    const bc={};r.L.filter(x=>x.carId).forEach(x=>{bc[x.carId]=(bc[x.carId]||0)+x.amount});
+    const cars=Object.entries(bc).sort((a,b)=>b[1]-a[1]).map(([id,v])=>`<div class="row sub"><span class="nm cn">${ico('car','var(--ac2)',24,'var(--ac)')}${esc(carOf(id)?carOf(id).name:'Auto rimossa')}</span><strong class="${r.c.type}">${eur(v)}</strong></div>`).join('');
+    return `<div class="row"><span class="nm cn">${cv(r.id,30)}<span>${esc(path(r.id))}<small>${r.L.length} registrazion${r.L.length===1?'e':'i'}</small></span></span><strong class="${r.c.type}">${r.c.type==='out'?'−':'+'}${eur(r.v)}</strong></div>${cars}`;
+  }).join(''):'<p class="empty">Tocca la rotellina per scegliere le categorie che vuoi tenere sempre sotto controllo.</p>';
+  return `<section class="fav"><div class="fh"><h2>In evidenza</h2><button type="button" class="gbtn" data-fv="1" aria-label="Scegli le categorie in evidenza"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">${ICONS.gear}</svg></button></div>${body}</section>`;
+}
+function favPick(){return new Promise(res=>{
+  const w=document.getElementById('dlg'),sel=new Set(favIds());
+  const item=(c,d)=>`<label class="fvi" style="padding-left:${4+d*18}px"><input type="checkbox" data-id="${c.id}"${sel.has(c.id)?' checked':''}>${cv(c.id,28)}<span>${esc(c.name)}</span></label>`;
+  const tree=(par,t,d)=>D.categories.filter(c=>(c.parentId||null)===par&&(par!==null||c.type===t)).map(c=>item(c,d)+tree(c.id,t,d+1)).join('');
+  const grp=(t,lb)=>{const h=tree(null,t,0);return h?`<p class="hint" style="margin:10px 0 2px"><b>${lb}</b></p>${h}`:''};
+  const list=grp('out','Uscite')+grp('in','Entrate')||'<p class="empty">Non hai ancora categorie. Creale dalla sezione Categorie.</p>';
+  w.innerHTML=`<div class="box"><h3>Categorie in evidenza</h3><p>Scegli quali categorie seguire, anche più di una. I totali comprendono le sottocategorie.</p><div class="fvl">${list}</div><div class="bt"><button data-r="0">Annulla</button><button class="primary" data-r="1">Salva</button></div></div>`;
+  w.hidden=false;
+  w.onclick=e=>{const r=e.target.dataset.r;if(r===undefined&&e.target!==w)return;
+    if(r==='1'){D.meta.fav=[...w.querySelectorAll('input[type=checkbox]')].filter(i=>i.checked).map(i=>i.dataset.id);save()}
+    w.hidden=true;res(r==='1')};
+})}
 function catSection(cur,out){
   const by={};
   cur.filter(x=>x.type==='out').forEach(x=>{const r=root(find(x.catId));const k=r?r.name:'Senza categoria';by[k]=by[k]||{v:0,c:(r&&r.color)||'#8e9ca7',i:(r&&r.icon)||'tag'};by[k].v+=x.amount});
@@ -598,8 +652,6 @@ function gest(){
   const sm=t=>cur.filter(x=>x.type===t).reduce((s,x)=>s+x.amount,0);
   const inn=sm('in'),out=sm('out'),bal=inn-out;
   const st=bal>0?['In positivo','pos']:bal<0?['In negativo','neg']:['In pareggio',''];
-  const byCar={};cur.filter(x=>x.type==='out'&&x.carId).forEach(x=>{byCar[x.carId]=(byCar[x.carId]||0)+x.amount});
-  const carRows=Object.entries(byCar).sort((a,b)=>b[1]-a[1]).map(([id,v])=>`<div class="row"><span class="nm cn">${ico('car','var(--ac2)',30,'var(--ac)')}${esc(carOf(id)?carOf(id).name:'Auto rimossa')}</span><strong class="out">${eur(v)}</strong></div>`).join('');
   const last=cur.map((x,i)=>[x,i]).sort((p,q)=>q[0].date.localeCompare(p[0].date)||q[1]-p[1]).slice(0,10).map(p=>p[0]);
   return `<button class="primary wide" style="margin:0 0 12px" data-e="new" data-v="out">＋ Registra</button>
   <div class="seg"><button data-p="m" class="${M?'on':''}">Mese</button><button data-p="y" class="${M?'':'on'}">Anno</button></div>
@@ -607,7 +659,7 @@ function gest(){
   <section class="bal ${st[1]}"><p>${M?'Saldo del mese':'Saldo dell’anno'}</p><strong>${eur(bal)}</strong><span>${st[0]}</span></section>
   <div class="two"><div><p>Entrate</p><strong>${eur(inn)}</strong></div><div><p>Uscite</p><strong>${eur(out)}</strong></div></div>
   ${catSection(cur,out)}${M?'':monthChart(cur)}
-  ${carRows?`<h2>Spese per automobile</h2>${carRows}`:''}
+  ${favSection(cur)}
   <h2>Ultimi 10 caricamenti · ${lab}</h2>
   ${last.length?last.map(erowH).join(''):'<p class="empty">Nessuna registrazione in questo periodo.</p>'}`;
 }
@@ -641,7 +693,8 @@ function dash(){
   return `${bkWarn()}${bannerSca()}${bannerMan()}${bannerTk()}${bannerBp()}<button class="primary wide" style="margin:0 0 12px" data-e="new" data-v="out">＋ Registra</button><div class="seg"><button data-p="m" class="${M?'on':''}">Mese</button><button data-p="y" class="${M?'':'on'}">Anno</button></div>
   <div class="yr"><button data-${k}="-1" aria-label="Periodo precedente">‹</button><strong>${lab}</strong><button data-${k}="1" aria-label="Periodo successivo">›</button></div>
   <section class="bal ${st[1]}"><p>${M?'Saldo del mese':'Saldo dell’anno'}</p><strong>${eur(bal)}</strong><span>${st[0]}</span></section>
-  <div class="two"><div><p>Entrate</p><strong>${eur(inn)}</strong><small>${dl(inn,sm(prv,'in'))} ${vs}</small></div><div><p>Uscite</p><strong>${eur(out)}</strong><small>${dl(out,sm(prv,'out'))} ${vs}</small></div></div>`;
+  <div class="two"><div><p>Entrate</p><strong>${eur(inn)}</strong><small>${dl(inn,sm(prv,'in'))} ${vs}</small></div><div><p>Uscite</p><strong>${eur(out)}</strong><small>${dl(out,sm(prv,'out'))} ${vs}</small></div></div>
+  ${catSection(cur,out)}${M?'':monthChart(cur)}`;
 }
 function dlg(o){return new Promise(res=>{
   const w=document.getElementById('dlg');
@@ -803,7 +856,7 @@ document.getElementById('frm').oninput=e=>{if(F&&e.target.id==='fbp'){F.bp=Math.
 document.getElementById('pick').onclick=fclick;
 document.getElementById('pick').oninput=e=>{if(e.target.id==='pkq'){PK.q=e.target.value;document.getElementById('pklist').innerHTML=pkRows()}};
 document.getElementById('main').oninput=e=>{if(e.target.id==='q'){Q=e.target.value;const l=document.getElementById('lst');if(l)l.innerHTML=listHTML()}};
-const VER='7.2';
+const VER='7.4';
 const NAVI={task:'<rect class="f" x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8 12l2.5 2.5L16 9"/>',home:'<rect class="f" x="3.5" y="3.5" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="13" y="3.5" width="7.5" height="5.5" rx="2.2"/><rect class="f" x="13" y="11" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="3.5" y="15" width="7.5" height="5.5" rx="2.2"/>',card:'<rect class="f" x="3.5" y="6.5" width="17" height="13" rx="3.2"/><path d="M6.8 6.5L15.6 4a1.6 1.6 0 0 1 2.1 1.5v1"/><path d="M20.5 11.2h-3.9a2.3 2.3 0 0 0 0 4.6h3.9"/><circle cx="16.9" cy="13.5" r=".7"/>',cal:'<rect class="f" x="3.5" y="5" width="17" height="15.5" rx="3.2"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15.2l2 2 4-4"/>',tool:'<path class="f" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',doc:'<path class="f" d="M7 3.5h7l4.5 4.5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13.5a2 2 0 0 1 2-2z"/><path d="M14 3.5V8h4.5M8.5 13h7M8.5 16.5h5"/>',tag:'<path class="f" d="M3.5 12.2V5.5a2 2 0 0 1 2-2h6.7l8.3 8.3a2 2 0 0 1 0 2.8l-6.4 6.4a2 2 0 0 1-2.8 0z"/><circle cx="8" cy="8" r="1.3"/>'};
 const navIco=k=>`<svg class="ni" viewBox="0 0 24 24">${NAVI[k]||ICONS[k]||''}</svg>`;
 const bkWarn=()=>{const m=D.meta.lastBackup;if(!D.entries.length&&!D.categories.length)return '';const old=!m||(Date.now()-new Date(m))>7*864e5;return old?`<button class="warn" data-e="set">⚠ ${m?'Ultimo backup oltre 7 giorni fa':'Nessun backup fatto'}. Salva i tuoi dati</button>`:''};
@@ -1031,9 +1084,11 @@ function docList(){
   return (q?`<p class="hint">${L.length} ${L.length===1?'risultato':'risultati'}</p>`:'')+(L.map(docRow).join('')||'<p class="empty">Nessun documento. Tocca “Carica documento” per aggiungere un PDF o una foto.</p>');
 }
 function taskRow(t){
-  const l=t.date?left(t):null,late=!t.done&&l!==null&&l<0,soon=!t.done&&l!==null&&l>=0&&l<=LEAD();
-  const chip=t.date?(t.done?'':`<span class="chip">${l<0?'In ritardo di '+(-l)+(-l===1?' giorno':' giorni'):l===0?'Oggi':l===1?'Domani':'Tra '+l+' giorni'}</span>`):'';
-  return `<div class="row erow tk${late?' late':soon?' soon':''}${t.done?' dn':''}" data-tk="edit" data-v="${t.id}"><button class="chkb${t.done?' on':''}" data-tk="toggle" data-v="${t.id}" aria-label="${t.done?'Riapri':'Segna come fatto'}">${t.done?'✓':''}</button><span class="nm">${esc(t.title)}<small>${t.catId&&find(t.catId)?esc(path(t.catId)):''}${t.catId&&find(t.catId)&&t.date?' · ':''}${t.date?dd(t.date):''}${t.done&&t.doneAt?' · fatto il '+dd(t.doneAt):''}</small>${chip}</span></div>`;
+  const l=t.date?left(t):null,late=!t.done&&l!==null&&l<0,soon=!t.done&&l!==null&&l>=0&&l<=LEAD(),dt=t.date?t.date.split('-'):null;
+  const badge=dt?`<div class="dbadge"><b>${+dt[2]}</b><span>${MESI[+dt[1]-1]}</span></div>`:'<div class="dbadge"><b>—</b><span>libero</span></div>';
+  const cat=t.catId&&find(t.catId)?esc(path(t.catId)):'Senza categoria';
+  const right=t.done?`<button class="okb" data-tk="toggle" data-v="${t.id}" aria-label="Riapri">↺</button>`:`${l!==null?`<div class="cnt"><b>${l===0?'Oggi':Math.abs(l)}</b><span>${l<0?'in ritardo':l===0?'scade':l===1?'giorno':'giorni'}</span></div>`:''}<button class="okb" data-tk="toggle" data-v="${t.id}" aria-label="Segna come fatto">✓</button>`;
+  return `<div class="row erow sc${late?' late':soon?' soon':''}${t.done?' dn':''}" data-tk="edit" data-v="${t.id}">${badge}<span class="nm">${esc(t.title)}<small>${cat}${!t.date?' · Senza scadenza':''}</small>${t.done?`<span class="chip">Fatto il ${dd(t.doneAt||t.date||today())}</span>`:''}</span>${right}</div>`;
 }
 function taskList(){
   const q=Q.trim();let L=D.tasks.slice();
@@ -1249,7 +1304,8 @@ SFg('scf').onclick=async e=>{
 document.getElementById('subnav').onclick=e=>{const b=e.target.closest('[data-s]');if(b){fsec=b.dataset.s;render()}};
 document.getElementById('nav').onclick=e=>{const b=e.target.closest('[data-area]');if(b){area=b.dataset.area;render()}};
 document.getElementById('main').onclick=async e=>{
-  const b=e.target.closest('[data-a],[data-t],[data-s],[data-y],[data-m],[data-p],[data-e],[data-rt],[data-go],[data-st],[data-g2],[data-dc],[data-tk],[data-tt],[data-gt],[data-tf]');if(!b)return;
+  const b=e.target.closest('[data-a],[data-t],[data-s],[data-y],[data-m],[data-p],[data-e],[data-rt],[data-go],[data-st],[data-g2],[data-dc],[data-tk],[data-tt],[data-gt],[data-tf],[data-fv]');if(!b)return;
+  if(b.dataset.fv){if(await favPick())render();return}
   if(b.dataset.tf){const v=b.dataset.tf;
     if(v==='tog')PRF.on[prfKey()]=!prfOn();
     else if(v==='m'||v==='y')PRF.per=v;
