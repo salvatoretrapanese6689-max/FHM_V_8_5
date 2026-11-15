@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-<title>Family Hub Manager 7.4</title>
+<title>Family Hub Manager 8.5</title>
 <style>
 :root{--bg:#0B0F1A;--sf:#101a33;--tx:#f2f6ff;--mu:#a7b5cf;--ac:#00A3FF;--ac2:#16264a;--ln:#26386a;--rd:#ff3d5a;--pos:#39ff6a;color-scheme:dark}
 
@@ -335,6 +335,56 @@ button.logo:active{transform:scale(.94)}
 .tot strong.out{color:var(--rd)}
 .tot strong.in{color:var(--pos)}
 .tot2>div{flex:1}
+.dch{display:flex;gap:6px;margin:6px 0 4px}
+.dy{display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;height:150px;min-width:50px;font-size:10px;color:var(--mu);line-height:1}
+.dpl{flex:1;min-width:0}
+.dbars{display:flex;align-items:flex-end;gap:2px;height:150px;border-bottom:1px solid var(--ln);background:linear-gradient(var(--ln),var(--ln)) 0 0/100% 1px no-repeat,linear-gradient(var(--ln),var(--ln)) 0 50%/100% 1px no-repeat}
+.dbars i{flex:1 1 0;min-width:0;background:var(--rd);border-radius:3px 3px 0 0}
+.dbars i.pk{box-shadow:0 0 7px var(--rd);filter:brightness(1.25)}
+.dx{display:flex;gap:2px;margin-top:4px}
+.dx span{display:flex;justify-content:center;flex:1 1 0;min-width:0;font-size:10px;color:var(--mu);white-space:nowrap}
+.bsum{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 10px}
+.bsum>div{border:1px solid var(--ln);border-radius:14px;background:var(--ac2);padding:10px 12px}
+.bsum small,.bgrid small{display:block;color:var(--mu);font-size:12px}
+.bsum b{font-size:17px}
+.bsum b.pos,.bgrid b.pos{color:var(--pos)}
+.bsum b.neg,.bgrid b.neg{color:var(--rd)}
+.bwarn{margin:0 0 10px;padding:8px 12px;border:1.5px solid var(--rd);border-radius:12px;color:var(--rd);font-weight:600;font-size:14px}
+.bcard{border:1px solid var(--ln);border-radius:14px;background:var(--sf);padding:10px 12px;margin-bottom:10px}
+.bt1{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bt1 .nm{min-width:0}
+.step{display:flex;align-items:center;gap:4px;flex:none}
+.step button{width:38px;height:38px;border-radius:10px;border:1px solid var(--ln);background:var(--ac2);color:var(--tx);font-size:20px;line-height:1;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;margin:0}
+.step .pct{width:62px;font-weight:700;font-size:16px;color:var(--ac);border-color:var(--ac)}
+.bbar{height:6px;border-radius:3px;background:var(--ln);margin:10px 0 8px;overflow:hidden}
+.bbar i{display:block;height:100%;background:var(--ac);border-radius:3px}
+.bbar i.over{background:var(--rd)}
+.bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center}
+.bgrid b{font-size:15px}
+.whw{position:relative;height:200px;margin:8px 0 12px}
+.whs{position:absolute;left:0;right:0;top:80px;height:40px;border-top:1.5px solid var(--ac);border-bottom:1.5px solid var(--ac);background:rgba(0,163,255,.08);pointer-events:none;z-index:1}
+.whl{height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;padding:80px 0;box-sizing:border-box;-webkit-overflow-scrolling:touch}
+.whl div{height:40px;line-height:40px;text-align:center;scroll-snap-align:center;font-size:19px;color:var(--mu);cursor:pointer}
+.whl div.sel{color:var(--tx);font-size:25px;font-weight:700}
+nav{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);overflow:visible}
+nav button{flex:none;min-width:0;padding:8px 0 6px;font-size:clamp(9px,2.7vw,11px);letter-spacing:0;overflow:hidden}
+.bgrp{margin:14px 0 6px;color:var(--mu);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.04em}
+.bcard.sub{margin-left:10px;border-left:3px solid var(--ac)}
+.btile{text-align:left;font:inherit;color:inherit;cursor:pointer;border:1.5px solid var(--ac)!important;border-radius:14px;background:var(--ac2);padding:10px 12px}
+.bsum small{display:block}
+.bsum .wide2{grid-column:1/-1}
+.bmr{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:12px;color:var(--ac)}
+.bmr button{border:1px solid var(--ac);background:transparent;color:var(--ac);border-radius:8px;padding:5px 10px;font-size:12px;cursor:pointer}
+.npi{width:100%;box-sizing:border-box;margin:8px 0 14px;padding:12px;font-size:20px;border-radius:12px;border:1px solid var(--ln);background:var(--ac2);color:var(--tx)}
+.npi.bad{border-color:var(--rd)}
+#dlg .bt{flex-wrap:wrap}
+.bcard.grp{border:1.5px solid var(--ac);margin-top:16px}
+.bcard.grp .gp{color:var(--ac);font-size:15px}
+.bcard.sub.d2{margin-left:24px}
+.bcard.sub.d3{margin-left:38px}
+.bgs{margin:2px 0 8px 10px;font-size:13px;color:var(--mu)}
+.bgs.ok{color:var(--pos)}
+.bgs.bad{color:var(--rd);font-weight:600}
 </style>
 </head>
 <body>
@@ -377,7 +427,7 @@ const save=()=>{
   catch(e){SAVEOK=false;showSaveErr();return false}
 };
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(v=>{window.__persist=v;const h=document.getElementById('persinfo');if(h)h.textContent=v?'Archiviazione protetta: il browser non cancellerà i dati da solo.':'Archiviazione non protetta: il browser potrebbe cancellare i dati se il telefono resta senza spazio. Fai backup regolari.'})}catch(e){}
-const AREAS=[['dash','Dashboard','home'],['fin','Finanze','card'],['sca','Scadenze','cal'],['man','Manutenzioni','tool'],['doc','Documenti','doc'],['cat','Categorie','tag']];
+const AREAS=[['dash','Dashboard','home','Home'],['fin','Finanze','card','Finanze'],['bud','Budget','pie','Budget'],['sca','Scadenze','cal','Scadenze'],['man','Manutenzioni','tool','Manut.'],['doc','Documenti','doc','Doc.'],['cat','Categorie','tag','Categorie']];
 let area='dash',type='out',fsec='gest',rt='act',st='todo',per='y',mon=new Date().getMonth(),year=new Date().getFullYear();
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -568,7 +618,8 @@ function render(){
   document.getElementById('sub').textContent=a[1]+(sb?' · '+sb[1]:'');
   sn.hidden=subs.length<2;
   sn.innerHTML=subs.map(x=>`<button class="${x[0]===fsec?'on':''}" data-s="${x[0]}">${x[1]}</button>`).join('');
-  document.getElementById('nav').innerHTML=AREAS.map(x=>`<button class="${x[0]===area?'on':''}" data-area="${x[0]}">${navIco(x[2])}${x[1]}</button>`).join('');
+  document.getElementById('nav').innerHTML=AREAS.map(x=>`<button class="${x[0]===area?'on':''}" data-area="${x[0]}" aria-label="${x[1]}">${navIco(x[2])}${x[3]||x[1]}</button>`).join('');
+  if(area==='bud'){m.innerHTML=btab==='c'?budgetCats():budget();return}
   if(area==='dash'){m.innerHTML=dash();return}
   if((area==='sca'||area==='man')&&fsec==='avv'){
     const kk=area==='man'?'m':'s';
@@ -641,6 +692,106 @@ function catSection(cur,out){
   if(!rows.length)return '<h2>Uscite per macro categoria</h2><p class="empty">Nessuna uscita registrata in questo periodo.</p>';
   return '<h2>Uscite per macro categoria</h2><div class="pieW">'+pie(rows,out)+'</div>'+rows.map(([n,v])=>`<div class="bar"><div class="bl"><span class="bn">${ico(v.i,v.c,24)}${esc(n)}</span><span>${eur(v.v)} · ${Math.round(v.v/out*100)}%</span></div><div class="tr"><i style="width:${Math.round(v.v/out*100)}%;background:${v.c}"></i></div></div>`).join('');
 }
+function dayChart(cur,yy,mm){
+  const nd=new Date(yy,mm+1,0).getDate(),v=Array(nd).fill(0);
+  cur.forEach(x=>{if(x.type==='out'){const d=+x.date.slice(8,10);if(d>=1&&d<=nd)v[d-1]+=x.amount}});
+  const mx=Math.max(...v),f=n=>String(+n.toFixed(2)).replace('.',',');
+  const nice=m=>{if(m<=0)return 1;const q=Math.pow(10,Math.floor(Math.log10(m)));return[1,2,2.5,5,10].map(k=>k*q).find(t=>t>=m-1e-9)};
+  const top=nice(mx),pk=v.indexOf(mx),lab=d=>[1,5,10,15,20,25].includes(d)||d===nd?d:'';
+  return `<h2>Spesa giornaliera</h2><div class="dch"><div class="dy"><span>${f(top)} €</span><span>${f(top/2)} €</span><span>0</span></div><div class="dpl"><div class="dbars">${v.map((x,i)=>`<i${mx>0&&i===pk?' class="pk"':''} style="height:${+(x/top*100).toFixed(2)}%"></i>`).join('')}</div><div class="dx">${v.map((_,i)=>`<span>${lab(i+1)}</span>`).join('')}</div></div></div><p class="leg"><i class="c2"></i>Uscite registrate per giorno</p>`+
+    (mx>0?`<p class="hint">Giorno con più spesa: ${pk+1} ${MESI[mm].toLowerCase()} · ${eur(mx)}</p>`:'<p class="hint">Nessuna spesa registrata in questo mese.</p>');
+}
+function wheelPick(title,start){return new Promise(res=>{
+  const w=document.getElementById('dlg'),H=40;
+  w.innerHTML=`<div class="box"><h3>${esc(title)}</h3><p>Scorri per scegliere la percentuale.</p><div class="whw"><div class="whs"></div><div class="whl" id="whl">${Array.from({length:101},(_,i)=>`<div data-i="${i}">${i}%</div>`).join('')}</div></div><div class="bt"><button data-r="0">Annulla</button><button class="primary" data-r="1">Imposta</button></div></div>`;
+  w.hidden=false;
+  const l=document.getElementById('whl'),idx=()=>Math.max(0,Math.min(100,Math.round(l.scrollTop/H))),mark=()=>{const s=idx();[...l.children].forEach((d,i)=>d.classList.toggle('sel',i===s))};
+  l.scrollTop=start*H;mark();requestAnimationFrame(()=>{l.scrollTop=start*H;mark()});
+  l.addEventListener('scroll',mark);
+  l.onclick=e=>{const i=e.target.dataset.i;if(i!==undefined)l.scrollTo({top:+i*H,behavior:'smooth'})};
+  w.onclick=e=>{const r=e.target.dataset.r;if(r===undefined&&e.target!==w)return;const v=r==='1'?idx():null;w.hidden=true;res(v)};
+})}
+let btab='y';
+function bud(){const m=D.meta;m.bud=m.bud||{};m.bud.years=m.bud.years||{};m.bud.months=m.bud.months||{};return m.bud}
+const yPctMap=y=>{const b=bud();for(let k=y;k>=y-10;k--)if(b.years[k]&&b.years[k].pct)return b.years[k].pct;return D.meta.budget||{}};
+const yIncV=y=>{const b=bud();for(let k=y;k>=y-10;k--)if(b.years[k]&&b.years[k].inc!=null)return b.years[k].inc;return 0};
+const bKey=()=>year+'-'+String(mon+1).padStart(2,'0');
+const pctNow=id=>{const o=btab==='m'?((bud().months[bKey()]||{}).pct||{}):{};const v=o[id]!==undefined?o[id]:yPctMap(year)[id];return Math.min(100,Math.max(0,+v||0))};
+function setPctNow(id,v){const b=bud();
+  if(btab==='m'){const mo=b.months[bKey()]||(b.months[bKey()]={});mo.pct=mo.pct||{};if(v===(+yPctMap(year)[id]||0))delete mo.pct[id];else mo.pct[id]=v}
+  else{const base={...yPctMap(year)},y0=b.years[year]||(b.years[year]={});if(!y0.pct)y0.pct=base;y0.pct[id]=v}}
+function numPick(title,start,opt){return new Promise(res=>{
+  const w=document.getElementById('dlg');opt=opt||{};
+  w.innerHTML=`<div class="box"><h3>${esc(title)}</h3>${opt.hint?`<p>${esc(opt.hint)}</p>`:''}<input id="npi" class="npi" inputmode="decimal" autocomplete="off" value="${start?String(start).replace('.',','):''}" placeholder="0,00"><div class="bt">${opt.reset?`<button data-r="reset">${esc(opt.reset)}</button>`:''}<button data-r="0">Annulla</button><button class="primary" data-r="1">Salva</button></div></div>`;
+  w.hidden=false;const i=document.getElementById('npi');setTimeout(()=>{i.focus();i.select()},60);
+  w.onclick=e=>{const r=e.target.dataset.r;if(r===undefined&&e.target!==w)return;
+    if(r==='1'){let t=i.value.trim();if(t.includes(','))t=t.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(t))t=t.replace(/\./g,'');const v=parseFloat(t);if(!isFinite(v)||v<0){i.classList.add('bad');return}w.hidden=true;res(Math.round(v*100)/100);return}
+    w.hidden=true;res(r==='reset'?'reset':null)};
+})}
+const kidsOf=id=>D.categories.filter(x=>x.parentId===id);
+const ySubMap=y=>{const b=bud();for(let k=y;k>=y-10;k--)if(b.years[k]&&b.years[k].sub)return b.years[k].sub;return{}};
+const shareNow=id=>Math.min(100,Math.max(0,+ySubMap(year)[id]||0));
+function setSub(id,v){const b=bud(),base={...ySubMap(year)},y0=b.years[year]||(b.years[year]={});if(!y0.sub)y0.sub=base;y0.sub[id]=v}
+function budgetCats(){
+  const y=year,r2=v=>Math.round(v*100)/100,sgn=d=>(d<0?'−':'+')+eur(Math.abs(d));
+  const cur=D.entries.filter(x=>+x.date.slice(0,4)===y),expY=yIncV(y),yp=yPctMap(y);
+  const spent=set=>r2(cur.filter(x=>x.type==='out'&&set.includes(x.catId)).reduce((a,x)=>a+x.amount,0));
+  const cls=(bd,sp)=>sp>bd+0.004?'neg':(bd===0&&sp===0?'':'pos');
+  const bar=(bd,sp)=>`<div class="bbar"><i class="${sp>bd+0.004?'over':''}" style="width:${bd>0?Math.min(100,sp/bd*100):(sp>0?100:0)}%"></i></div>`;
+  const grid=(bd,sp)=>`<div class="bgrid"><div><small>Budget</small><b>${eur(bd)}</b></div><div><small>Speso</small><b>${eur(sp)}</b></div><div><small>Differenza</small><b class="${cls(bd,sp)}">${sgn(r2(bd-sp))}</b></div></div>`;
+  const row=(c,sh,bd,sp,dp)=>`<div class="bcard sub d${dp}"><div class="bt1"><span class="nm cn">${cv(c.id,30)}${esc(c.name)}</span><div class="step"><button data-bg="-1" data-sub="1" data-id="${c.id}" aria-label="Diminuisci di uno">−</button><button class="pct" data-bg="wheel" data-sub="1" data-id="${c.id}" aria-label="Scegli la quota">${sh}%</button><button data-bg="1" data-sub="1" data-id="${c.id}" aria-label="Aumenta di uno">＋</button></div></div>${bar(bd,sp)}${grid(bd,sp)}</div>`;
+  const group=(par,pbd,dp)=>{const kids=kidsOf(par.id);if(!kids.length)return '';
+    const S=kids.reduce((a,c)=>a+shareNow(c.id),0),own=spent([par.id]);
+    const st=S===100?`<p class="bgs ok">Quote di ${esc(par.name)}: 100% ✓</p>`:S<100?`<p class="bgs">Quote di ${esc(par.name)}: ${S}% assegnato · mancano ${100-S}% (${eur(r2(pbd*(100-S)/100))})</p>`:`<p class="bgs bad">Quote di ${esc(par.name)}: ${S}% · oltre il 100%</p>`;
+    return st+kids.map(c=>{const sh=shareNow(c.id),bd=r2(pbd*sh/100);return row(c,sh,bd,spent([c.id,...desc(c.id)]),dp)+group(c,bd,Math.min(3,dp+1))}).join('')+(own>0?`<p class="hint">Senza sottocategoria: speso ${eur(own)} (non ha una quota)</p>`:'');
+  };
+  const roots=D.categories.filter(c=>!c.parentId&&c.type==='out'),withK=roots.filter(c=>kidsOf(c.id).length),noK=roots.filter(c=>!kidsOf(c.id).length);
+  const blocks=withK.map(c=>{const pct=Math.min(100,Math.max(0,+yp[c.id]||0)),mbd=r2(expY*pct/100),msp=spent([c.id,...desc(c.id)]);
+    return `<div class="bcard grp"><div class="bt1"><span class="nm cn">${cv(c.id,30)}${esc(c.name)}</span><b class="gp">${pct}% · ${eur(mbd)}</b></div>${bar(mbd,msp)}${grid(mbd,msp)}${pct===0&&expY>0?`<p class="hint" style="margin:8px 0 0">Assegna prima una percentuale a ${esc(c.name)} nella pagina Annuale.</p>`:''}</div>`+group(c,mbd,1)}).join('');
+  return `<div class="seg"><button data-bt="y">Annuale</button><button data-bt="m">Mensile</button><button data-bt="c" class="on">Categorie</button></div>
+  <div class="yr"><button data-y="-1" aria-label="Anno precedente">‹</button><strong>${y}</strong><button data-y="1" aria-label="Anno successivo">›</button></div>
+  <p class="hint">Qui dividi il budget annuale di ogni categoria tra le sue sottocategorie: per ogni gruppo le quote devono fare 100%.</p>
+  ${expY===0?'<p class="hint">Imposta prima le entrate annuali previste nella pagina Annuale: senza, tutti i budget sono a 0.</p>':''}
+  ${blocks||'<p class="empty">Nessuna categoria di uscita ha sottocategorie. Creale dalla sezione Categorie.</p>'}
+  ${noK.length?`<p class="hint">Senza sottocategorie (qui non serve): ${noK.map(c=>esc(c.name)).join(', ')}</p>`:''}`;
+}
+function budget(){
+  const M=btab==='m',y=year,b=bud(),r2=v=>Math.round(v*100)/100,sgn=d=>(d<0?'−':'+')+eur(Math.abs(d));
+  const lab=M?MESI_L[mon]+' '+y:y,k=M?'m':'y',mo=M?(b.months[bKey()]||{}):{},ov=mo.pct||{},yp=yPctMap(y);
+  const cur=D.entries.filter(x=>+x.date.slice(0,4)===y&&(!M||+x.date.slice(5,7)-1===mon));
+  const reg=r2(cur.filter(x=>x.type==='in').reduce((a,x)=>a+x.amount,0));
+  const expY=yIncV(y),expM=M?(mo.inc!=null?mo.inc:r2(expY/12)):0,exp=M?expM:expY;
+  const basis=M&&b.basis==='e'?'e':'p',base=M?(basis==='e'?reg:expM):expY;
+  const spent=set=>r2(cur.filter(x=>x.type==='out'&&set.includes(x.catId)).reduce((a,x)=>a+x.amount,0));
+  const roots=D.categories.filter(c=>!c.parentId&&c.type==='out');
+  const mk=(id,label,sp,sub)=>{const pct=pctNow(id),bud=r2(base*pct/100);return{id,label,pct,bud,sp,d:r2(bud-sp),sub,mod:M&&ov[id]!==undefined,ann:Math.min(100,Math.max(0,+yp[id]||0))}};
+  const rows=[];
+  roots.forEach(c=>rows.push(mk(c.id,c.name,spent([c.id,...desc(c.id)]),false)));
+  const R=rows.filter(r=>!r.hdr);
+  const orph=r2(cur.filter(x=>x.type==='out'&&!find(x.catId)).reduce((a,x)=>a+x.amount,0));
+  const totPct=R.reduce((a,r)=>a+r.pct,0),totBud=r2(R.reduce((a,r)=>a+r.bud,0)),totSp=r2(R.reduce((a,r)=>a+r.sp,0)+orph),totD=r2(totBud-totSp);
+  const cls=(bd,sp)=>sp>bd+0.004?'neg':(bd===0&&sp===0?'':'pos');
+  const card=r=>`<div class="bcard${r.sub?' sub':''}"><div class="bt1"><span class="nm cn">${cv(r.id,30)}${esc(r.label)}</span><div class="step"><button data-bg="-1" data-id="${r.id}" aria-label="Diminuisci di uno">−</button><button class="pct" data-bg="wheel" data-id="${r.id}" aria-label="Scegli la percentuale">${r.pct}%</button><button data-bg="1" data-id="${r.id}" aria-label="Aumenta di uno">＋</button></div></div>${r.mod?`<div class="bmr"><span>Modificato · annuale ${r.ann}%</span><button data-bg="reset" data-id="${r.id}">↺ Ripristina</button></div>`:''}<div class="bbar"><i class="${r.sp>r.bud+0.004?'over':''}" style="width:${r.bud>0?Math.min(100,r.sp/r.bud*100):(r.sp>0?100:0)}%"></i></div><div class="bgrid"><div><small>Budget</small><b>${eur(r.bud)}</b></div><div><small>Speso</small><b>${eur(r.sp)}</b></div><div><small>Differenza</small><b class="${cls(r.bud,r.sp)}">${sgn(r.d)}</b></div></div></div>`;
+  const orphCard=orph>0?`<div class="bcard"><div class="bt1"><span class="nm cn">${ico('tag','#8899b3',30)}Senza categoria</span></div><div class="bgrid"><div><small>Budget</small><b>${eur(0)}</b></div><div><small>Speso</small><b>${eur(orph)}</b></div><div><small>Differenza</small><b class="neg">${sgn(-orph)}</b></div></div></div>`:'';
+  const now=new Date(),cy=now.getFullYear(),doy=Math.floor((Date.UTC(cy,now.getMonth(),now.getDate())-Date.UTC(cy,0,0))/864e5);
+  const el=Math.round(doy/(cy%4===0?366:365)*100),cons=totBud>0?Math.round(totSp/totBud*100):0;
+  const lastY=D.entries.filter(x=>x.type==='in'&&+x.date.slice(0,4)===y-1).reduce((a,x)=>a+x.amount,0);
+  const dReg=r2(reg-exp);
+  const tiles=`<div class="bsum">
+    <button type="button" class="btile" data-bg="inc"><small>Entrate previste${M?' del mese':' annue'} ✎</small><b>${eur(exp)}</b>${M?`<small>${mo.inc!=null?'modificate a mano':'annuale ÷ 12'}</small>`:(lastY>0?`<small>Anno scorso registrate: ${eur(r2(lastY))}</small>`:'')}</button>
+    <div><small>Registrate ${M?'nel mese':'finora'}</small><b>${eur(reg)}</b><small>${exp>0?(M?(dReg>=0?'+':'−')+eur(Math.abs(dReg))+' rispetto al previsto':Math.round(reg/exp*100)+'% del previsto'):'nessun previsto'}</small></div>
+    <div><small>Budget assegnato · ${totPct}%</small><b>${eur(totBud)}</b>${M?`<small>calcolato su ${basis==='e'?'registrato':'previsto'}</small>`:''}</div>
+    <div><small>Speso ${M?'nel mese':'finora'}</small><b>${eur(totSp)}</b></div>
+    <div class="wide2"><small>Differenza totale</small><b class="${cls(totBud,totSp)}">${sgn(totD)}</b></div></div>`;
+  return `<div class="seg"><button data-bt="y" class="${M?'':'on'}">Annuale</button><button data-bt="m" class="${M?'on':''}">Mensile</button><button data-bt="c">Categorie</button></div>
+  <div class="yr"><button data-${k}="-1" aria-label="Periodo precedente">‹</button><strong>${lab}</strong><button data-${k}="1" aria-label="Periodo successivo">›</button></div>
+  ${tiles}
+  ${M?`<div class="seg" style="margin:0 0 10px"><button data-bg="basis" data-v="p" class="${basis==='p'?'on':''}">Calcola su previsto</button><button data-bg="basis" data-v="e" class="${basis==='e'?'on':''}">Calcola su registrato</button></div>`:''}
+  ${totPct>100?`<p class="bwarn">Hai assegnato il ${totPct}%: sei oltre il 100% delle entrate.</p>`:`<p class="hint">Libero da assegnare: ${100-totPct}% (${eur(r2(base*(100-totPct)/100))})</p>`}
+  ${!M&&y===cy&&totBud>0?`<p class="hint">Anno trascorso: ${el}% · Budget consumato: ${cons}%</p>`:''}
+  ${base===0?`<p class="hint">${M?(basis==='e'?'Nessuna entrata registrata nel mese: i budget risultano a 0. Passa a "Calcola su previsto" o tocca le entrate previste.':'Imposta le entrate annuali previste nella pagina Annuale, oppure quelle di questo mese.'):'Tocca "Entrate previste" e inserisci quanto ipotizzi di guadagnare quest\'anno: i budget si calcolano su quell\'importo.'}</p>`:''}
+  ${rows.map(r=>r.hdr?`<p class="bgrp">${esc(r.hdr)} · sottocategorie</p>`:card(r)).join('')||'<p class="empty">Non hai ancora macro categorie di uscita. Creale dalla sezione Categorie.</p>'}${orphCard}`;
+}
 function monthChart(cur){
   const mm=MESI.map((_,i)=>{const f=t=>cur.filter(x=>x.type===t&&+x.date.slice(5,7)-1===i).reduce((s,x)=>s+x.amount,0);return[f('in'),f('out')]});
   const mx=Math.max(1,...mm.flat());
@@ -658,7 +809,7 @@ function gest(){
   <div class="yr"><button data-${k}="-1" aria-label="Periodo precedente">‹</button><strong>${lab}</strong><button data-${k}="1" aria-label="Periodo successivo">›</button></div>
   <section class="bal ${st[1]}"><p>${M?'Saldo del mese':'Saldo dell’anno'}</p><strong>${eur(bal)}</strong><span>${st[0]}</span></section>
   <div class="two"><div><p>Entrate</p><strong>${eur(inn)}</strong></div><div><p>Uscite</p><strong>${eur(out)}</strong></div></div>
-  ${catSection(cur,out)}${M?'':monthChart(cur)}
+  ${catSection(cur,out)}${M?dayChart(cur,year,mon):monthChart(cur)}
   ${favSection(cur)}
   <h2>Ultimi 10 caricamenti · ${lab}</h2>
   ${last.length?last.map(erowH).join(''):'<p class="empty">Nessuna registrazione in questo periodo.</p>'}`;
@@ -856,8 +1007,8 @@ document.getElementById('frm').oninput=e=>{if(F&&e.target.id==='fbp'){F.bp=Math.
 document.getElementById('pick').onclick=fclick;
 document.getElementById('pick').oninput=e=>{if(e.target.id==='pkq'){PK.q=e.target.value;document.getElementById('pklist').innerHTML=pkRows()}};
 document.getElementById('main').oninput=e=>{if(e.target.id==='q'){Q=e.target.value;const l=document.getElementById('lst');if(l)l.innerHTML=listHTML()}};
-const VER='7.4';
-const NAVI={task:'<rect class="f" x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8 12l2.5 2.5L16 9"/>',home:'<rect class="f" x="3.5" y="3.5" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="13" y="3.5" width="7.5" height="5.5" rx="2.2"/><rect class="f" x="13" y="11" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="3.5" y="15" width="7.5" height="5.5" rx="2.2"/>',card:'<rect class="f" x="3.5" y="6.5" width="17" height="13" rx="3.2"/><path d="M6.8 6.5L15.6 4a1.6 1.6 0 0 1 2.1 1.5v1"/><path d="M20.5 11.2h-3.9a2.3 2.3 0 0 0 0 4.6h3.9"/><circle cx="16.9" cy="13.5" r=".7"/>',cal:'<rect class="f" x="3.5" y="5" width="17" height="15.5" rx="3.2"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15.2l2 2 4-4"/>',tool:'<path class="f" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',doc:'<path class="f" d="M7 3.5h7l4.5 4.5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13.5a2 2 0 0 1 2-2z"/><path d="M14 3.5V8h4.5M8.5 13h7M8.5 16.5h5"/>',tag:'<path class="f" d="M3.5 12.2V5.5a2 2 0 0 1 2-2h6.7l8.3 8.3a2 2 0 0 1 0 2.8l-6.4 6.4a2 2 0 0 1-2.8 0z"/><circle cx="8" cy="8" r="1.3"/>'};
+const VER='8.5';
+const NAVI={pie:'<circle class="f" cx="12" cy="12" r="8.5"/><path d="M12 3.5V12h8.5"/>',task:'<rect class="f" x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8 12l2.5 2.5L16 9"/>',home:'<rect class="f" x="3.5" y="3.5" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="13" y="3.5" width="7.5" height="5.5" rx="2.2"/><rect class="f" x="13" y="11" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="3.5" y="15" width="7.5" height="5.5" rx="2.2"/>',card:'<rect class="f" x="3.5" y="6.5" width="17" height="13" rx="3.2"/><path d="M6.8 6.5L15.6 4a1.6 1.6 0 0 1 2.1 1.5v1"/><path d="M20.5 11.2h-3.9a2.3 2.3 0 0 0 0 4.6h3.9"/><circle cx="16.9" cy="13.5" r=".7"/>',cal:'<rect class="f" x="3.5" y="5" width="17" height="15.5" rx="3.2"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15.2l2 2 4-4"/>',tool:'<path class="f" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',doc:'<path class="f" d="M7 3.5h7l4.5 4.5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13.5a2 2 0 0 1 2-2z"/><path d="M14 3.5V8h4.5M8.5 13h7M8.5 16.5h5"/>',tag:'<path class="f" d="M3.5 12.2V5.5a2 2 0 0 1 2-2h6.7l8.3 8.3a2 2 0 0 1 0 2.8l-6.4 6.4a2 2 0 0 1-2.8 0z"/><circle cx="8" cy="8" r="1.3"/>'};
 const navIco=k=>`<svg class="ni" viewBox="0 0 24 24">${NAVI[k]||ICONS[k]||''}</svg>`;
 const bkWarn=()=>{const m=D.meta.lastBackup;if(!D.entries.length&&!D.categories.length)return '';const old=!m||(Date.now()-new Date(m))>7*864e5;return old?`<button class="warn" data-e="set">⚠ ${m?'Ultimo backup oltre 7 giorni fa':'Nessun backup fatto'}. Salva i tuoi dati</button>`:''};
 function dl(name,text,mime){const b=new Blob([text],{type:mime}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
@@ -1304,8 +1455,21 @@ SFg('scf').onclick=async e=>{
 document.getElementById('subnav').onclick=e=>{const b=e.target.closest('[data-s]');if(b){fsec=b.dataset.s;render()}};
 document.getElementById('nav').onclick=e=>{const b=e.target.closest('[data-area]');if(b){area=b.dataset.area;render()}};
 document.getElementById('main').onclick=async e=>{
-  const b=e.target.closest('[data-a],[data-t],[data-s],[data-y],[data-m],[data-p],[data-e],[data-rt],[data-go],[data-st],[data-g2],[data-dc],[data-tk],[data-tt],[data-gt],[data-tf],[data-fv]');if(!b)return;
+  const b=e.target.closest('[data-a],[data-t],[data-s],[data-y],[data-m],[data-p],[data-e],[data-rt],[data-go],[data-st],[data-g2],[data-dc],[data-tk],[data-tt],[data-gt],[data-tf],[data-fv],[data-bg],[data-bt]');if(!b)return;
+  if(b.dataset.bt){btab=b.dataset.bt;per=btab==='m'?'m':'y';render();return}
   if(b.dataset.fv){if(await favPick())render();return}
+  if(b.dataset.bg){const act=b.dataset.bg,id=b.dataset.id,M=btab==='m',SB=b.dataset.sub==='1',bd=bud();
+    if(act==='inc'){
+      const cur0=M?((bd.months[bKey()]||{}).inc!=null?bd.months[bKey()].inc:Math.round(yIncV(year)/12*100)/100):yIncV(year);
+      const r=await numPick(M?'Entrate previste · '+MESI_L[mon]+' '+year:'Entrate annue previste · '+year,cur0,{hint:M?'Vale solo per questo mese.':'Il budget annuale e i budget mensili partono da questo importo.',reset:M&&(bd.months[bKey()]||{}).inc!=null?'Predefinito':null});
+      if(r===null)return;
+      if(M){const mo=bd.months[bKey()]||(bd.months[bKey()]={});if(r==='reset')delete mo.inc;else mo.inc=r}
+      else{const y0=bd.years[year]||(bd.years[year]={});y0.inc=r}
+    }else if(act==='basis'){bd.basis=b.dataset.v==='e'?'e':'p'}
+    else if(act==='reset'){const mo=bd.months[bKey()];if(mo&&mo.pct)delete mo.pct[id]}
+    else if(act==='wheel'){const c=find(id),nv=await wheelPick((SB?'Quota · ':'Percentuale · ')+(c?c.name:''),SB?shareNow(id):pctNow(id));if(nv===null)return;SB?setSub(id,nv):setPctNow(id,nv)}
+    else{const cu=SB?shareNow(id):pctNow(id),nv=Math.max(0,Math.min(100,cu+(+act)));SB?setSub(id,nv):setPctNow(id,nv)}
+    save();render();return}
   if(b.dataset.tf){const v=b.dataset.tf;
     if(v==='tog')PRF.on[prfKey()]=!prfOn();
     else if(v==='m'||v==='y')PRF.per=v;
