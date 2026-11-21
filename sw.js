@@ -1,7 +1,7 @@
 /* Family Hub Manager - service worker (v7.1)
    Non tocca mai i dati dell'app (localStorage / IndexedDB): serve solo per
    rendere l'app installabile e farla aprire anche senza rete. */
-const VER = 'fhm-8.5';
+const VER = 'fhm-8.6';
 const FONTS = 'fhm-fonts';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
@@ -42,6 +42,15 @@ async function staticFirst(req) {
   return res;
 }
 
+async function manifestFresh(req) {
+  const c = await caches.open(VER);
+  try {
+    const res = await fetch(req.url, { cache: 'no-cache' });
+    if (res && res.ok) { await c.put('./manifest.json', res.clone()); return res; }
+  } catch (err) { /* offline: uso la copia salvata */ }
+  return (await c.match('./manifest.json')) || Response.error();
+}
+
 async function fontsSWR(req) {
   const c = await caches.open(FONTS);
   const hit = await c.match(req);
@@ -54,6 +63,7 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const u = new URL(req.url);
   if (req.mode === 'navigate' && u.origin === location.origin) { e.respondWith(openApp(req)); return; }
+  if (u.origin === location.origin && u.pathname.endsWith('/manifest.json')) { e.respondWith(manifestFresh(req)); return; }
   if (u.origin === location.origin) { e.respondWith(staticFirst(req)); return; }
   if (u.hostname === 'fonts.googleapis.com' || u.hostname === 'fonts.gstatic.com') { e.respondWith(fontsSWR(req)); }
 });
