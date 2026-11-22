@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-<title>Family Hub Manager 8.7</title>
+<title>Family Hub Manager 8.8</title>
 <style>
 :root{--bg:#0B0F1A;--sf:#101a33;--tx:#f2f6ff;--mu:#a7b5cf;--ac:#00A3FF;--ac2:#16264a;--ln:#26386a;--rd:#ff3d5a;--pos:#39ff6a;color-scheme:dark}
 
@@ -582,7 +582,7 @@ function entList(){
 function recOcc(r){
   const out=[],pad=n=>String(n).padStart(2,'0');
   D.entries.forEach(x=>{if(x.recId===r.id&&prfIn(x.date))out.push({date:x.date,amount:x.amount})});
-  if(r.active){const end=PRF.per==='y'?PRF.year+'-12-31':PRF.year+'-'+pad(PRF.mon+1)+'-31';let d=r.next,g=0;while(d<=end&&g++<500&&(!r.until||d<=r.until)){if(prfIn(d))out.push({date:d,amount:r.amount});d=addM(d,r.n,r.day)}}
+  if(r.active){const end=PRF.per==='y'?PRF.year+'-12-31':PRF.year+'-'+pad(PRF.mon+1)+'-31';let d=r.next,g=0;while(d<=end&&g++<500&&(!r.until||d<r.until)){if(prfIn(d))out.push({date:d,amount:r.amount});d=addM(d,r.n,r.day)}}
   return out;
 }
 function recList(){
@@ -593,7 +593,7 @@ function recList(){
   if(on)items=items.filter(i=>i.occ.length);
   const sum=t=>Math.round(items.filter(i=>i.r.type===t).reduce((a,i)=>a+(on?i.occ.reduce((b,o)=>b+o.amount,0):i.r.amount),0)*100)/100,n=items.length;
   return `<div class="tot tot2"><div><p>Entrate</p><strong class="in">+${eur(sum('in'))}</strong></div><div><p>Uscite</p><strong class="out">−${eur(sum('out'))}</strong></div></div><p class="hint">${n} ${n===1?'ricorrenza':'ricorrenze'} · ${on?'importi del periodo (già registrati e in programma)':'importo di una singola scadenza'}</p>`+
-  (items.map(({r,occ})=>`<div class="row erow" data-e="editrec" data-v="${r.id}">${cv(r.catId)}<span class="nm">${esc(r.name)}<small>${cad[r.n]} · prossima ${r.next.split('-').reverse().join('/')}${on?' · '+occ.length+'× nel periodo':''}${r.until&&r.active?' · fino al '+dd(r.until):''}${r.active?'':(r.ended?' · terminata':' · sospesa')}${find(r.catId)?'':' · senza categoria'}</small></span><strong class="${r.type}">${r.type==='out'?'−':'+'}${eur(r.amount)}</strong></div>`).join('')||`<p class="empty">Nessuna ricorrenza ${q||on?'trovata':'in questa lista'}.</p>`);
+  (items.map(({r,occ})=>`<div class="row erow" data-e="editrec" data-v="${r.id}">${cv(r.catId)}<span class="nm">${esc(r.name)}<small>${cad[r.n]} · prossima ${r.next.split('-').reverse().join('/')}${on?' · '+occ.length+'× nel periodo':''}${r.until&&r.active?' · scade il '+dd(r.until):''}${r.active?'':(r.ended?' · terminata':' · sospesa')}${find(r.catId)?'':' · senza categoria'}</small></span><strong class="${r.type}">${r.type==='out'?'−':'+'}${eur(r.amount)}</strong></div>`).join('')||`<p class="empty">Nessuna ricorrenza ${q||on?'trovata':'in questa lista'}.</p>`);
 }
 function scaList(){
   const kk=area==='man'?'m':'s',q=Q.trim();
@@ -873,8 +873,8 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 function runRec(){
   const t=today(),fin=[];let n=0;
   D.rec.forEach(r=>{if(!r.active||!find(r.catId))return;let g=0;
-    while(r.next<=t&&g++<60&&(!r.until||r.next<=r.until)){D.entries.push({id:uid(),type:r.type,date:r.next,catId:r.catId,amount:r.amount,note:r.name,recId:r.id,carId:r.carId||null,bp:r.bp||0,bpv:r.bpv||0});r.next=addM(r.next,r.n,r.day);n++}
-    if(r.until&&r.next>r.until){r.active=false;r.ended=true;fin.push(r.name)}});
+    while(r.next<=t&&g++<60&&(!r.until||r.next<r.until)){D.entries.push({id:uid(),type:r.type,date:r.next,catId:r.catId,amount:r.amount,note:r.name,recId:r.id,carId:r.carId||null,bp:r.bp||0,bpv:r.bpv||0});r.next=addM(r.next,r.n,r.day);n++}
+    if(r.until&&r.next>=r.until){r.active=false;r.ended=true;fin.push(r.name)}});
   if(n||fin.length){save();toast((n?(n===1?'Registrata 1 ricorrenza':'Registrate '+n+' ricorrenze'):'')+(n&&fin.length?' · ':'')+(fin.length?'Terminata: '+fin.join(', '):''))}
   return n;
 }
@@ -919,11 +919,11 @@ function openForm(t0,id){
   const w=document.getElementById('frm');w.innerHTML='';drawForm();w.hidden=false;
 }
 function untilHint(){
-  if(!F.until)return F.ended?'Questa ricorrenza è terminata. Imposta una nuova data finale o toglila per riattivarla.':'Senza data finale: continua finché non la sospendi.';
+  if(!F.until)return F.ended?'Questa ricorrenza è terminata. Imposta una nuova data di scadenza o toglila per riattivarla.':'Senza data di scadenza: continua finché non la sospendi.';
   if(!F.date)return '';
-  if(F.until<F.date)return '⚠ La data finale è prima della prossima scadenza.';
-  let d=F.date,c=0,last='';const day=+F.date.slice(8);while(d<=F.until&&c<600){c++;last=d;d=addM(d,F.n,day)}
-  return 'Verranno registrate '+c+(c===1?' scadenza':' scadenze')+', l’ultima il '+dd(last)+'. Poi la ricorrenza si ferma da sola.';
+  if(F.until<=F.date)return '⚠ La data di scadenza deve essere dopo la prima scadenza.';
+  let d=F.date,c=0,last='';const day=+F.date.slice(8);while(d<F.until&&c<600){c++;last=d;d=addM(d,F.n,day)}
+  return 'Verranno registrate '+c+(c===1?' scadenza':' scadenze')+', l’ultima il '+dd(last)+'. Dal '+dd(F.until)+' la ricorrenza è finita.';
 }
 function drawForm(err){
   if(F.rcpt)return drawReceipt(err);
@@ -935,7 +935,7 @@ function drawForm(err){
   ${R?`<label class="fld"><span>Nome</span><input id="fr" maxlength="40" value="${esc(F.name)}" placeholder="Es. Mutuo casa"></label>`:''}
   <label class="fld"><span>${R?'Prossima scadenza':'Data'}</span><input type="date" id="fd" value="${F.date}"></label>
   ${R?`<label class="fld"><span>Cadenza</span><select id="fc">${CAD.map(c=>`<option value="${c[0]}"${c[0]===F.n?' selected':''}>${c[1]}</option>`).join('')}</select></label>`:''}
-  ${R?`<div class="fld"><span>Fino a (facoltativa)</span><div class="untl"><input type="date" id="fu" value="${F.until||''}"><button type="button" class="rx" data-f="uclr" aria-label="Togli la data finale">✕</button></div><p class="hint" id="fuh" style="margin-top:6px">${untilHint()}</p></div>`:''}
+  ${R?`<div class="fld"><span>Scade il (facoltativa)</span><div class="untl"><input type="date" id="fu" value="${F.until||''}"><button type="button" class="rx" data-f="uclr" aria-label="Togli la data di scadenza">✕</button></div><p class="hint" id="fuh" style="margin-top:6px">${untilHint()}</p></div>`:''}
   <div class="fld"><span>Categoria</span><button class="catb" data-f="cat">${F.cat&&find(F.cat)?cv(F.cat,26)+esc(path(F.cat)):'Scegli categoria'}</button></div>
   ${needsCar(F.cat)?`<div class="fld"><span>Automobile</span><button class="catb" data-f="car">${F.car&&F.car!=='none'&&carOf(F.car)?ico('car','var(--ac2)',26,'var(--ac)')+esc(carOf(F.car).name):F.car==='none'?'Nessuna auto':'Scegli automobile'}</button></div>`:''}
   <span class="slb">${needsBp(F.cat)&&F.type==='in'?'Contanti':'Importo'}</span>
@@ -1067,10 +1067,10 @@ async function fclick(e){
     if(needsCar(F.cat)&&D.cars.some(c=>!c.hidden)&&!F.car)return drawForm('Scegli l’automobile (o “Nessuna auto”).');
     if(F.rec){
       const nm=F.name.trim();if(!nm)return drawForm('Scrivi un nome.');
-      if(F.until&&F.until<F.date)return drawForm('La data “Fino a” ('+dd(F.until)+') è prima della prossima scadenza ('+dd(F.date)+'). Spostala più avanti o toglila.');
+      if(F.until&&F.until<=F.date)return drawForm('La data “Scade il” ('+dd(F.until)+') deve essere dopo la prima scadenza ('+dd(F.date)+'). Spostala più avanti o toglila.');
       const o={name:nm,type:F.type,catId:F.cat,amount:Math.round(tot*100)/100,bp:nb,bpv:nb?bv:0,n:F.n,next:F.date,day:+F.date.slice(8),active:F.rid?F.active:true,until:F.until||null,ended:F.rid&&!F.active?!!F.ended:false,carId:needsCar(F.cat)&&F.car&&F.car!=='none'?F.car:null},t=today();
       if(o.active&&o.next<=t){
-        let d=o.next,c=0;while(d<=t&&c<60&&(!o.until||d<=o.until)){c++;d=addM(d,o.n,o.day)}
+        let d=o.next,c=0;while(d<=t&&c<60&&(!o.until||d<o.until)){c++;d=addM(d,o.n,o.day)}
         const ok=await dlg({t:'Prima scadenza nel passato',p:`Verranno registrate subito ${c} registrazioni${c>=60?' (il massimo)':''}, a partire dal ${o.next.split('-').reverse().join('/')}. Per non registrarle, scegli una data futura.`,ok:'Registra',d:1});
         if(!ok)return;
       }
@@ -1097,7 +1097,7 @@ document.getElementById('frm').oninput=e=>{if(F&&e.target.id==='fbp'){F.bp=Math.
 document.getElementById('pick').onclick=fclick;
 document.getElementById('pick').oninput=e=>{if(e.target.id==='pkq'){PK.q=e.target.value;document.getElementById('pklist').innerHTML=pkRows()}};
 document.getElementById('main').oninput=e=>{if(e.target.id==='q'){Q=e.target.value;const l=document.getElementById('lst');if(l)l.innerHTML=listHTML()}};
-const VER='8.7';
+const VER='8.8';
 const NAVI={pie:'<circle class="f" cx="12" cy="12" r="8.5"/><path d="M12 3.5V12h8.5"/>',task:'<rect class="f" x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8 12l2.5 2.5L16 9"/>',home:'<rect class="f" x="3.5" y="3.5" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="13" y="3.5" width="7.5" height="5.5" rx="2.2"/><rect class="f" x="13" y="11" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="3.5" y="15" width="7.5" height="5.5" rx="2.2"/>',card:'<rect class="f" x="3.5" y="6.5" width="17" height="13" rx="3.2"/><path d="M6.8 6.5L15.6 4a1.6 1.6 0 0 1 2.1 1.5v1"/><path d="M20.5 11.2h-3.9a2.3 2.3 0 0 0 0 4.6h3.9"/><circle cx="16.9" cy="13.5" r=".7"/>',cal:'<rect class="f" x="3.5" y="5" width="17" height="15.5" rx="3.2"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15.2l2 2 4-4"/>',tool:'<path class="f" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',doc:'<path class="f" d="M7 3.5h7l4.5 4.5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13.5a2 2 0 0 1 2-2z"/><path d="M14 3.5V8h4.5M8.5 13h7M8.5 16.5h5"/>',tag:'<path class="f" d="M3.5 12.2V5.5a2 2 0 0 1 2-2h6.7l8.3 8.3a2 2 0 0 1 0 2.8l-6.4 6.4a2 2 0 0 1-2.8 0z"/><circle cx="8" cy="8" r="1.3"/>'};
 const navIco=k=>`<svg class="ni" viewBox="0 0 24 24">${NAVI[k]||ICONS[k]||''}</svg>`;
 const bkWarn=()=>{const m=D.meta.lastBackup;if(!D.entries.length&&!D.categories.length)return '';const old=!m||(Date.now()-new Date(m))>7*864e5;return old?`<button class="warn" data-e="set">⚠ ${m?'Ultimo backup oltre 7 giorni fa':'Nessun backup fatto'}. Salva i tuoi dati</button>`:''};
