@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-<title>Family Hub Manager 8.8</title>
+<title>Family Hub Manager 8.9</title>
 <style>
 :root{--bg:#0B0F1A;--sf:#101a33;--tx:#f2f6ff;--mu:#a7b5cf;--ac:#00A3FF;--ac2:#16264a;--ln:#26386a;--rd:#ff3d5a;--pos:#39ff6a;color-scheme:dark}
 
@@ -395,6 +395,7 @@ nav button{flex:none;min-width:0;padding:8px 0 6px;font-size:clamp(9px,2.7vw,11p
 .untl{display:flex;gap:8px}
 .untl input{flex:1;min-width:0}
 .untl .rx{width:44px;flex:none;border-radius:12px;border:1px solid var(--ln);background:transparent;color:var(--rd);font-size:18px;cursor:pointer;padding:0}
+.simlow{color:var(--rd)!important;font-weight:600}
 </style>
 </head>
 <body>
@@ -833,6 +834,34 @@ const bannerTk=()=>{
   const L=D.tasks.filter(t=>!t.done).sort((a,b)=>(a.date||'9999').localeCompare(b.date||'9999')),late=L.some(t=>t.date&&left(t)<0),soon=L.some(t=>t.date&&left(t)>=0&&left(t)<=LEAD());
   return `<section class="bnr c-t${late?' late':soon?' soon':''}"><div class="bh"><span>${navIco('task')} Task da fare${L.length?' ('+L.length+')':''}</span><button data-gt="sca|task">Vedi tutti ›</button></div>${L.length?L.slice(0,5).map(taskRow).join(''):'<p class="empty">Nessun task da fare.</p>'}${L.length>5?`<p class="empty">… e altri ${L.length-5}</p>`:''}</section>`;
 };
+const simCat=()=>{const s=D.meta.sim||{},c=s.cat&&find(s.cat);if(c)return c;return D.categories.find(x=>x.type==='out'&&/\bsim\b/i.test(x.name))||null};
+const simSet=c=>[c.id,...desc(c.id)];
+function simBal(){const s=D.meta.sim||{},c=simCat();if(!c||!s.from)return null;const set=simSet(c);let b=+s.init||0;
+  D.entries.forEach(x=>{if(x.type==='out'&&set.includes(x.catId)&&x.date>s.from)b-=x.amount});
+  (s.rech||[]).forEach(r=>{if(r.date>=s.from)b+=r.amount});return Math.round(b*100)/100}
+function simFee(){const c=simCat();if(!c)return null;const set=simSet(c);
+  const rs=D.rec.filter(r=>r.active&&r.type==='out'&&set.includes(r.catId)).sort((a,b)=>a.next.localeCompare(b.next));
+  if(rs.length)return{fee:Math.round(rs.reduce((a,r)=>a+r.amount/(r.n||1),0)*100)/100,nextAmt:rs[0].amount,next:rs[0].next};
+  const last=D.entries.filter(x=>x.type==='out'&&set.includes(x.catId)).sort((a,b)=>b.date.localeCompare(a.date))[0];
+  return last?{fee:last.amount,nextAmt:null,next:null}:null}
+async function simInit(){const c=simCat();if(!c)return;const s=D.meta.sim||{};
+  const v=await numPick('Credito iniziale · '+c.name,s.from?s.init:0,{hint:'Il saldo che ha la SIM oggi. Da domani lo scalano le uscite di questa categoria e lo aumentano le ricariche.'});
+  if(v===null||v==='reset')return;D.meta.sim=Object.assign(s,{init:v,from:today()});save();render();if(!document.getElementById('set').hidden)drawSettings()}
+async function simRecharge(){const c=simCat();if(!c)return;
+  if(!(D.meta.sim&&D.meta.sim.from)){await simInit();if(!(D.meta.sim&&D.meta.sim.from))return}
+  const v=await numPick('Ricarica credito · '+c.name,0,{hint:'Aumenta solo il credito: non viene registrata come spesa.'});
+  if(v===null||v==='reset'||!(v>0))return;
+  const s=D.meta.sim;s.rech=s.rech||[];s.rech.push({id:uid(),date:today(),amount:v});save();render();toast('Ricarica aggiunta: +'+eur(v))}
+const bannerSim=()=>{const c=simCat();if(!c)return '';const s=D.meta.sim||{},b=simBal(),f=simFee();
+  const head=`<div class="bh"><span>${navIco('card')} ${esc(c.name)}</span><button data-sim="rech">＋ Ricarica</button></div>`;
+  if(b===null)return `<section class="bnr">${head}<p class="empty">Imposta il credito di partenza della SIM.</p><button class="rcs" data-sim="init">Imposta credito iniziale</button></section>`;
+  const low=!!(f&&f.nextAmt!=null&&b<f.nextAmt-0.004),mesi=f&&f.fee>0?Math.floor((b+1e-9)/f.fee):null,lr=(s.rech||[]).slice().sort((x,y)=>y.date.localeCompare(x.date))[0];
+  const lrT=lr?' · ultima ricarica '+dd(lr.date)+' (+'+eur(lr.amount)+')':'';
+  return `<section class="bnr">${head}<div class="bpbox"><div><b class="bpn${b<0?' neg':''}">${eur(b)}</b><small>credito disponibile</small></div>${f?`<div class="bpvv"><b>${eur(f.nextAmt!=null?f.nextAmt:f.fee)}</b><small>${f.next?'canone del '+dd(f.next):'ultimo canone'}</small></div>`:''}</div>${low?'<p class="empty simlow">Credito insufficiente per il prossimo canone: ricarica la SIM.</p>':(mesi!==null?`<p class="empty">Basta ancora per circa ${mesi} ${mesi===1?'mese':'mesi'}${lrT}</p>`:(lr?`<p class="empty">Ultima ricarica ${dd(lr.date)} (+${eur(lr.amount)})</p>`:''))}</section>`};
+function simSettingsHtml(){const c=simCat(),s=D.meta.sim||{},b=simBal();
+  return `<p class="hint">Come per i buoni pasto: il credito scende con le uscite della categoria scelta (anche quelle ricorrenti) e sale con le ricariche, che non contano come spesa.</p>
+  <button class="srow" data-k="sim-cat"><b>Categoria della SIM</b><small>${c?esc(path(c.id)):'Non scelta'}</small></button>
+  ${c?`<button class="srow" data-k="sim-init"><b>Credito iniziale</b><small>${s.from?eur(+s.init||0)+' al '+dd(s.from):'Non impostato'}</small></button>${b!==null?`<div class="srow" style="cursor:default"><b>Credito attuale</b><small>${eur(b)}</small></div>`:''}${(s.rech||[]).slice().sort((x,y)=>y.date.localeCompare(x.date)).slice(0,8).map(r=>`<div class="srow" style="cursor:default;flex-direction:row;align-items:center;justify-content:space-between"><span><b>Ricarica ${dd(r.date)}</b><br><small>+${eur(r.amount)}</small></span><button class="stp" data-k="sim-rdel" data-v="${r.id}" aria-label="Elimina ricarica">🗑</button></div>`).join('')}`:''}`}
 const bannerBp=()=>{
   if(!bpOn())return '';
   const s=bpStock(),t=new Date(),ym=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');
@@ -851,7 +880,7 @@ function dash(){
   const vs=M?'rispetto al mese prima':'rispetto all’anno prima';
   const st=bal>0?['In positivo','pos']:bal<0?['In negativo','neg']:['In pareggio',''];
   const k=M?'m':'y',lab=M?MESI_L[mon]+' '+year:year;
-  return `${bkWarn()}${bannerSca()}${bannerMan()}${bannerTk()}${bannerBp()}<button class="primary wide" style="margin:0 0 12px" data-e="new" data-v="out">＋ Registra</button><div class="seg"><button data-p="m" class="${M?'on':''}">Mese</button><button data-p="y" class="${M?'':'on'}">Anno</button></div>
+  return `${bkWarn()}${bannerSca()}${bannerMan()}${bannerTk()}${bannerBp()}${bannerSim()}<button class="primary wide" style="margin:0 0 12px" data-e="new" data-v="out">＋ Registra</button><div class="seg"><button data-p="m" class="${M?'on':''}">Mese</button><button data-p="y" class="${M?'':'on'}">Anno</button></div>
   <div class="yr"><button data-${k}="-1" aria-label="Periodo precedente">‹</button><strong>${lab}</strong><button data-${k}="1" aria-label="Periodo successivo">›</button></div>
   <section class="bal ${st[1]}"><p>${M?'Saldo del mese':'Saldo dell’anno'}</p><strong>${eur(bal)}</strong><span>${st[0]}</span></section>
   <div class="two"><div><p>Entrate</p><strong>${eur(inn)}</strong><small>${dl(inn,sm(prv,'in'))} ${vs}</small></div><div><p>Uscite</p><strong>${eur(out)}</strong><small>${dl(out,sm(prv,'out'))} ${vs}</small></div></div>
@@ -1097,7 +1126,7 @@ document.getElementById('frm').oninput=e=>{if(F&&e.target.id==='fbp'){F.bp=Math.
 document.getElementById('pick').onclick=fclick;
 document.getElementById('pick').oninput=e=>{if(e.target.id==='pkq'){PK.q=e.target.value;document.getElementById('pklist').innerHTML=pkRows()}};
 document.getElementById('main').oninput=e=>{if(e.target.id==='q'){Q=e.target.value;const l=document.getElementById('lst');if(l)l.innerHTML=listHTML()}};
-const VER='8.8';
+const VER='8.9';
 const NAVI={pie:'<circle class="f" cx="12" cy="12" r="8.5"/><path d="M12 3.5V12h8.5"/>',task:'<rect class="f" x="4" y="4" width="16" height="16" rx="3.5"/><path d="M8 12l2.5 2.5L16 9"/>',home:'<rect class="f" x="3.5" y="3.5" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="13" y="3.5" width="7.5" height="5.5" rx="2.2"/><rect class="f" x="13" y="11" width="7.5" height="9.5" rx="2.2"/><rect class="f" x="3.5" y="15" width="7.5" height="5.5" rx="2.2"/>',card:'<rect class="f" x="3.5" y="6.5" width="17" height="13" rx="3.2"/><path d="M6.8 6.5L15.6 4a1.6 1.6 0 0 1 2.1 1.5v1"/><path d="M20.5 11.2h-3.9a2.3 2.3 0 0 0 0 4.6h3.9"/><circle cx="16.9" cy="13.5" r=".7"/>',cal:'<rect class="f" x="3.5" y="5" width="17" height="15.5" rx="3.2"/><path d="M8 3v4M16 3v4M3.5 10h17M9 15.2l2 2 4-4"/>',tool:'<path class="f" d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',doc:'<path class="f" d="M7 3.5h7l4.5 4.5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-13.5a2 2 0 0 1 2-2z"/><path d="M14 3.5V8h4.5M8.5 13h7M8.5 16.5h5"/>',tag:'<path class="f" d="M3.5 12.2V5.5a2 2 0 0 1 2-2h6.7l8.3 8.3a2 2 0 0 1 0 2.8l-6.4 6.4a2 2 0 0 1-2.8 0z"/><circle cx="8" cy="8" r="1.3"/>'};
 const navIco=k=>`<svg class="ni" viewBox="0 0 24 24">${NAVI[k]||ICONS[k]||''}</svg>`;
 const bkWarn=()=>{const m=D.meta.lastBackup;if(!D.entries.length&&!D.categories.length)return '';const old=!m||(Date.now()-new Date(m))>7*864e5;return old?`<button class="warn" data-e="set">⚠ ${m?'Ultimo backup oltre 7 giorni fa':'Nessun backup fatto'}. Salva i tuoi dati</button>`:''};
@@ -1125,6 +1154,8 @@ function drawSettings(){
   <h2>Buoni pasto</h2>
   <div class="srow" style="cursor:default;flex-direction:row;align-items:center;justify-content:space-between"><span><b>Valore di un buono</b><br><small>in euro</small></span><input class="nin" id="sbv" inputmode="decimal" value="${String(BPV()).replace('.',',')}"></div>
   <div class="srow" style="cursor:default;flex-direction:row;align-items:center;justify-content:space-between"><span><b>Buoni già disponibili</b><br><small>punto di partenza</small></span><input class="nin" id="sbi" inputmode="numeric" value="${D.meta.bpInit||0}"></div>
+  <h2>SIM allarme</h2>
+  ${simSettingsHtml()}
   <h2>Scadenze e manutenzioni</h2>
   <div class="srow" style="cursor:default;flex-direction:row;align-items:center;justify-content:space-between"><span><b>Preavviso</b><br><small>Giorni prima in cui vanno in evidenza</small></span><span><button class="stp" data-k="ld-">−</button> <b>${D.meta.lead||7}</b> <button class="stp" data-k="ld+">＋</button></span></div>
   <h2>Informazioni</h2>
@@ -1163,6 +1194,9 @@ document.getElementById('set').onclick=async e=>{
   const b=e.target.closest('[data-k]');if(!b)return;const k=b.dataset.k;
   if(k==='ctxt'){openTxt('copy');return}
   if(k==='rtxt'){openTxt('paste');return}
+  if(k==='sim-cat'){openPick('out',id=>{D.meta.sim=D.meta.sim||{};D.meta.sim.cat=id;save();drawSettings();render()});return}
+  if(k==='sim-init'){await simInit();return}
+  if(k==='sim-rdel'){const ok=await dlg({t:'Eliminare la ricarica?',p:'Il credito della SIM scenderà di questo importo.',ok:'Elimina',d:1});if(ok){D.meta.sim.rech=(D.meta.sim.rech||[]).filter(r=>r.id!==b.dataset.v);save();drawSettings();render()}return}
   if(k==='car-add'){const n=await dlg({t:'Nuova automobile',i:1,ok:'Aggiungi'});if(n){D.cars.push({id:uid(),name:n});save();drawSettings()}return}
   if(k==='car-ren'){const c=D.cars.find(x=>x.id===b.dataset.v);const n=await dlg({t:'Rinomina automobile',i:1,v:c.name,ok:'Salva'});if(n){c.name=n;save();drawSettings()}return}
   if(k==='car-del'){
@@ -1545,7 +1579,8 @@ SFg('scf').onclick=async e=>{
 document.getElementById('subnav').onclick=e=>{const b=e.target.closest('[data-s]');if(b){fsec=b.dataset.s;render()}};
 document.getElementById('nav').onclick=e=>{const b=e.target.closest('[data-area]');if(b){area=b.dataset.area;render()}};
 document.getElementById('main').onclick=async e=>{
-  const b=e.target.closest('[data-a],[data-t],[data-s],[data-y],[data-m],[data-p],[data-e],[data-rt],[data-go],[data-st],[data-g2],[data-dc],[data-tk],[data-tt],[data-gt],[data-tf],[data-fv],[data-bg],[data-bt]');if(!b)return;
+  const b=e.target.closest('[data-a],[data-t],[data-s],[data-y],[data-m],[data-p],[data-e],[data-rt],[data-go],[data-st],[data-g2],[data-dc],[data-tk],[data-tt],[data-gt],[data-tf],[data-fv],[data-bg],[data-bt],[data-sim]');if(!b)return;
+  if(b.dataset.sim){if(b.dataset.sim==='rech')await simRecharge();else await simInit();return}
   if(b.dataset.bt){btab=b.dataset.bt;per=btab==='m'?'m':'y';render();return}
   if(b.dataset.fv){if(await favPick())render();return}
   if(b.dataset.bg){const act=b.dataset.bg,id=b.dataset.id,M=btab==='m',SB=b.dataset.sub==='1',bd=bud();

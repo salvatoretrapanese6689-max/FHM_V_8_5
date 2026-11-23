@@ -1,7 +1,7 @@
 /* Family Hub Manager - service worker (v7.1)
    Non tocca mai i dati dell'app (localStorage / IndexedDB): serve solo per
    rendere l'app installabile e farla aprire anche senza rete. */
-const VER = 'fhm-8.8';
+const VER = 'fhm-8.9';
 const FONTS = 'fhm-fonts';
 const SHELL = ['./index.html', './manifest.json', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
